@@ -1,6 +1,0 @@
-
-#run tests and delay 3 seconds.  Rely on outer script for looping
-
-python3 ./test_envelope.py
-
-sleep 3
