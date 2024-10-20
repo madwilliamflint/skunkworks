@@ -1,0 +1,49 @@
+## Copilot
+Sure! Here are the updated scripts for the echo client and server using JSON as a message envelope.
+Server Script (echo_server.py)
+import asyncio
+import websockets
+import json
+
+async def echo(websocket, path):
+    async for message in websocket:
+        data = json.loads(message)
+        print(f"Received message: {data['message']}")
+        response = json.dumps({"message": data['message']})
+        await websocket.send(response)
+
+start_server = websockets.serve(echo, "localhost", 8765)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
+
+Client Script (echo_client.py)
+import asyncio
+import websockets
+import json
+
+async def echo_client():
+    uri = "ws://localhost:8765"
+    async with websockets.connect(uri) as websocket:
+        message = input("Enter a message to send: ")
+        envelope = json.dumps({"message": message})
+        await websocket.send(envelope)
+        response = await websocket.recv()
+        data = json.loads(response)
+        print(f"Received from server: {data['message']}")
+
+asyncio.get_event_loop().run_until_complete(echo_client())
+
+Instructions- Install the websockets library:
+
+pip install websockets
+
+- Run the server:
+
+python echo_server.py
+
+- Run the client:
+
+python echo_client.py
+
+In these scripts, the messages are wrapped in a JSON envelope with a "message" key. This allows for easy extension in the future if you need to add more fields to the message. If you have any further questions or need additional modifications, feel free to ask!

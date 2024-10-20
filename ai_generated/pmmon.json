@@ -1,0 +1,20 @@
+{
+    "resources": [
+        {
+            "name": "Example Site",
+            "url": "https://www.example.com",
+            "port": 80
+        },
+        {
+            "name": "Google",
+            "url": "https://www.google.com",
+            "port": 443
+        },
+        {
+            "name": "Invalid URL",
+            "url": "https://www.invalid-url.com",
+            "port": 8080
+        }
+    ],
+    "refresh_delay": 60000 
+}
