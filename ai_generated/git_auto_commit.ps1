@@ -33,8 +33,8 @@ if ($latestTag -ne "daily-$today") {
     git tag "daily-$today"
     git push origin "daily-$today"
     # Push the changes to the remote repository
-    git push origin $currentBranch
+    #git push origin $currentBranch
 }
 
 # Push the changes to the remote repository (but commented out as it's now handled above)
-# git push origin $currentBranch
+git push origin $currentBranch
