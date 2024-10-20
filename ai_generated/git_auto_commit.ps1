@@ -10,6 +10,9 @@ if (-not $RepoPath) {
 # Navigate to your repository directory
 Set-Location -Path $RepoPath
 
+# Get the current branch name
+$currentBranch = git symbolic-ref --short HEAD
+
 # Add any new or modified files
 git add .
 
@@ -30,8 +33,8 @@ if ($latestTag -ne "daily-$today") {
     git tag "daily-$today"
     git push origin "daily-$today"
     # Push the changes to the remote repository
-    git push origin master
+    git push origin $currentBranch
 }
 
 # Push the changes to the remote repository (but commented out as it's now handled above)
-# git push origin master
+# git push origin $currentBranch
