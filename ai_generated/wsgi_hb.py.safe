@@ -1,0 +1,68 @@
+#!/usr/bin/python
+
+import sys
+import threading
+import requests
+import time
+
+import bottle
+
+def log(message):
+    print("[{0}]:\t{1}".format(threading.get_ident(),message))
+
+def log_dict(d):
+    for k in d:
+        log("{0}: {1}".format(k,d[k]))
+
+def log_http_response(response):
+    log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    log("Status: [{0}]".format(response.status_code))
+    log_dict(response.headers)
+    log("")
+    log(response.text)
+    log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
+def run_trigger(occasion):
+    log("run_trigger()")
+    result = "This is a heartbeat response.  The occasion variable came in saying [{0}].".format(occasion)
+    return result
+
+def make_request():
+    url = 'http://127.0.0.1:1234/trigger/'
+    while True:
+        try:
+            response = requests.get(url)
+            log_http_response(response)
+            
+        except requests.exceptions.RequestException as e:
+            log(f"Request failed: {e}")
+        time.sleep(1)
+
+def start_thread():
+    #thread = threading.Thread(target=make_request, args=('http://127.0.0.1:1234/trigger/'))
+    thread = threading.Thread(target=make_request)
+
+    thread.daemon = True  # This makes sure the thread will exit when the main program exits
+    thread.start()
+
+@bottle.route('/trigger/<occasion>')
+@bottle.route('/trigger/')
+def route_trigger(occasion='tick'):
+    result = run_trigger(occasion)
+    return "Thanks!  [{0}].".format(result)
+
+@bottle.error()
+def route_generic_error(error):
+    # Log the unresolved route attempt
+    whups = f"Error {bottle.error.status_code}: {bottle.error.body} at {bottle.request.url} from {bottle.request.remote_addr}"
+    log(whups)
+    return whups
+
+if __name__ == '__main__':
+
+
+    start_thread()
+    port_num = 1234
+
+    log("running bottle's run method...")       
+    bottle.run(host="0.0.0.0",port=port_num,reloader=True)
