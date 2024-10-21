@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "text": "Node 2",
+            "x": 81.0,
+            "y": 1.0
+        },
+        {
+            "text": "Node 1",
+            "x": -47.0,
+            "y": 82.0
+        }
+    ],
+    "edges": [
+        {
+            "source": "Node 1",
+            "dest": "Node 2"
+        }
+    ]
+}
