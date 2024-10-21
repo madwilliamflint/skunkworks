@@ -1,0 +1,24 @@
+{
+    "nodes": [
+        {
+            "text": "Node 2",
+            "x": 200.0,
+            "y": 200.0,
+            "color": "#ffff00"
+        },
+        {
+            "text": "Node 1",
+            "x": 0.0,
+            "y": 0.0,
+            "color": "#ffff00"
+        }
+    ],
+    "edges": [
+        {
+            "source": "Node 1",
+            "dest": "Node 2",
+            "text": "Foo",
+            "color": "#aba0ff"
+        }
+    ]
+}
