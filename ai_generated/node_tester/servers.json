@@ -1,39 +1,30 @@
 {
     "Server1": {
         "host": "192.168.1.1",
-        "test_profiles": [
-            {
-                "id": 1,
+        "test_profiles": {
+            "1": {
                 "protocol": "http",
                 "port": 8080,
                 "url": "/custom-endpoint"
-            },
-            {
-                "id": 2,
-                "protocol": "telnet",
-                "port": 23
             }
-        ]
+        }
     },
     "Server2": {
         "host": "example.com",
-        "test_profiles": [
-            {
-                "id": 1,
-                "protocol": "http",
-                "port": 80,
-                "url": "/another-endpoint"
-            }
-        ]
-    },
-    "Server3": {
-        "host": "invalid.host",
-        "test_profiles": [
-            {
-                "id": 1,
+        "test_profiles": {
+            "1": {
                 "protocol": "smtp",
                 "port": 25
             }
-        ]
+        }
+    },
+    "Server3": {
+        "host": "invalid.host",
+        "test_profiles": {
+            "1": {
+                "protocol": "telnet",
+                "port": 23
+            }
+        }
     }
 }
