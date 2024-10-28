@@ -1,0 +1,11 @@
+# Project: projectname
+# Version: 0.0.1
+# PackageType: sample
+# BuildNumber: 1
+# Author: Me, myself, and I
+.\node_tester.py
+.\sample.manifest.lst
+.\servers.json
+.\backup\node_tester.py
+.\backup\servers.json
+.\backup\server_responses.log

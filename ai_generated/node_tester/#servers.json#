@@ -1,0 +1,30 @@
+yes{
+    "Server1": {
+        "host": "192.168.1.1",
+        "test_profiles": {
+            "1": {
+                "protocol": "http",
+                "port": 8080,
+                "url": "/custom-endpoint"
+            }
+        }
+    },
+    "Server2": {
+        "host": "example.com",
+        "test_profiles": {
+            "1": {
+                "protocol": "smtp",
+                "port": 25
+            }
+        }
+    },
+    "Server3": {
+        "host": "invalid.host",
+        "test_profiles": {
+            "1": {
+                "protocol": "telnet",
+                "port": 23
+            }
+        }
+    }
+}
