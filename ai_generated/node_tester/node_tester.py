@@ -6,6 +6,10 @@ from requests.exceptions import RequestException, Timeout, ConnectionError
 import telnetlib
 import smtplib
 
+
+
+global_timeout=1
+
 # Initialize logging
 logging.basicConfig(filename='server_responses.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -30,23 +34,27 @@ def poll_http(name, host, port, endpoint):
     url = f"http://{host}:{port}{endpoint}"
     timestamp = datetime.datetime.now().isoformat()
     start_time = datetime.datetime.now()
+    response = None
     response_time = "N/A"
+    status = 'N/A'
+    response_code = 'N/A'
+    response_time = None
     try:
-        response = requests.get(url, timeout=10)
-        response_time = datetime.datetime.now() - start_time
+        response = requests.get(url, timeout=global_timeout)
         response.raise_for_status()
-        result = format_message(timestamp, name, host, port, "Success", response.status_code, f"{response_time.total_seconds()}s", url)
+        status = 'Success'
+        response_code = response.status_code
     except Timeout:
-        response_time = datetime.datetime.now() - start_time
-        result = format_message(timestamp, name, host, port, "Timeout", "N/A", f"{response_time.total_seconds()}s", url)
+        status = "Timeout"
     except ConnectionError as e:
-        response_time = datetime.datetime.now() - start_time
         status = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
-        result = format_message(timestamp, name, host, port, status, "N/A", f"{response_time.total_seconds()}s", url)
     except RequestException as e:
-        response_time = datetime.datetime.now() - start_time
         response_code = e.response.status_code if e.response else "N/A"
-        result = format_message(timestamp, name, host, port, "Error", response_code, f"{response_time.total_seconds()}s", url)
+        status = 'Error'
+    finally:
+        response_time = datetime.datetime.now() - start_time
+
+    result = format_message(timestamp, name, host, port, status,response_code, f"{response_time.total_seconds()}", url)
     log_result(result)
 
 def poll_telnet(name, host, port):

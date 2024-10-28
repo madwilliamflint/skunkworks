@@ -1,4 +1,19 @@
 {
+    "home": {
+        "host": "127.0.0.1",
+        "test_profiles": {
+            "1": {
+                "protocol": "http",
+                "port": 5050,
+                "url": "/"
+            },
+            "2": {
+                "protocol": "http",
+                "port": 5051,
+                "url": "/"
+            }
+        }
+    },
     "Server1": {
         "host": "192.168.1.1",
         "test_profiles": {
