@@ -3,8 +3,6 @@ import logging
 import json
 import datetime
 from requests.exceptions import RequestException, Timeout, ConnectionError
-import telnetlib
-import smtplib
 
 # Initialize logging
 logging.basicConfig(filename='server_responses.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,7 +16,7 @@ def log_message(timestamp, name, host, port, status, response_code, response_tim
     logging.info(message)
     print(message)
 
-def poll_http(name, host, port, endpoint):
+def poll_server(name, host, port, endpoint):
     url = f"http://{host}:{port}{endpoint}"
     timestamp = datetime.datetime.now().isoformat()
     start_time = datetime.datetime.now()
@@ -42,26 +40,13 @@ def poll_http(name, host, port, endpoint):
         response_code = e.response.status_code if e.response else "N/A"
         log_message(timestamp, name, host, port, "Error", response_code, f"{response_time.total_seconds()}s", url)
 
-def poll_telnet(name, host, port):
-    timestamp = datetime.datetime.now().isoformat()
-    start_time = datetime.datetime.now()
-    try:
-        tn = telnetlib.Telnet(host, port, timeout=10)
-        response_time = datetime.datetime.now() - start_time
-        tn.close()
-        log_message(timestamp, name, host, port, "Success", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
-    except TimeoutError:
-        response_time = datetime.datetime.now() - start_time
-        log_message(timestamp, name, host, port, "Timeout", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
-    except ConnectionRefusedError:
-        response_time = datetime.datetime.now() - start_time
-        log_message(timestamp, name, host, port, "Port Not Listening", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
-    except Exception as e:
-        response_time = datetime.datetime.now() - start_time
-        log_message(timestamp, name, host, port, "Unreachable", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
+def main():
+    header = f"{'Timestamp':<30}{'Name':<15}{'Host':<20}{'Port':<7}{'Status':<16}{'Response Code':<14}{'Response Time':<10}URL"
+    logging.info(header)
+    print(header)
+    for name, server in servers.items():
+        endpoint = server.get("url", "/custom-endpoint")
+        poll_server(name, server['host'], server['port'], endpoint)
 
-def poll_smtp(name, host, port):
-    timestamp = datetime.datetime.now().isoformat()
-    start_time = datetime.datetime.now()
-    try:
-        server = smtplib.SMTP(host, port, timeout=10)
+if __name__ == "__main__":
+    main()

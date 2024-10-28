@@ -1,0 +1,23 @@
+{
+    "local_duh": {
+        "host": "127.0.0.1",
+        "port": 80
+    },
+    "local_wiki": {
+        "host": "127.0.0.1",
+        "port": 5050,
+        "url": ""
+    },
+    "local_node": {
+        "host": "127.0.0.1",
+        "port": 9090
+    },
+    "notthere": {
+        "host": "10.131.37.1",
+        "port": 80
+    },
+    "central": {
+        "host": "10.131.37.131",
+        "port": 9090
+    }
+}

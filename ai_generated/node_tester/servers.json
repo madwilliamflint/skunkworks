@@ -1,23 +1,39 @@
 {
-    "local_duh": {
-        "host": "127.0.0.1",
-        "port": 80
+    "Server1": {
+        "host": "192.168.1.1",
+        "test_profiles": [
+            {
+                "id": 1,
+                "protocol": "http",
+                "port": 8080,
+                "url": "/custom-endpoint"
+            },
+            {
+                "id": 2,
+                "protocol": "telnet",
+                "port": 23
+            }
+        ]
     },
-    "local_wiki": {
-        "host": "127.0.0.1",
-        "port": 5050,
-        "url": ""
+    "Server2": {
+        "host": "example.com",
+        "test_profiles": [
+            {
+                "id": 1,
+                "protocol": "http",
+                "port": 80,
+                "url": "/another-endpoint"
+            }
+        ]
     },
-    "local_node": {
-        "host": "127.0.0.1",
-        "port": 9090
-    },
-    "notthere": {
-        "host": "10.131.37.1",
-        "port": 80
-    },
-    "central": {
-        "host": "10.131.37.131",
-        "port": 9090
+    "Server3": {
+        "host": "invalid.host",
+        "test_profiles": [
+            {
+                "id": 1,
+                "protocol": "smtp",
+                "port": 25
+            }
+        ]
     }
 }
