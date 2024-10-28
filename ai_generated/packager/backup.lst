@@ -1,0 +1,10 @@
+# Project: packager
+# Version: 0.0.1
+# PackageType: backup
+# BuildNumber: 16
+# Author: Me, myself, and I
+# Comment: this has the wildcard entry.
+.\package.py
+.\README.txt
+missingfiletest.foo
+*
