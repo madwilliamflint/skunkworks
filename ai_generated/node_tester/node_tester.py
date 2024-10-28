@@ -2,6 +2,7 @@ import requests
 import logging
 import json
 import datetime
+import socket
 from requests.exceptions import RequestException, Timeout, ConnectionError
 import telnetlib
 import smtplib
@@ -17,6 +18,21 @@ logging.basicConfig(filename='server_responses.log', level=logging.INFO, format=
 with open('servers.json', 'r') as f:
     servers = json.load(f)
 
+
+def ip_reachable(host,port,timeout=10):
+    try:
+        sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        sock.connect((host,port))
+        sock.close()
+        return True
+    except ConnectionRefusedError:
+        return True
+    except TimeoutError:
+        return False
+        
+    return False
+
 def log_result(result):
     """
     Log and print result. This function can be replaced to redirect output as needed.
@@ -24,11 +40,11 @@ def log_result(result):
     logging.info(result)
     print(result)
 
-def format_message(timestamp, name, host, port, status, response_code, response_time, url):
+def format_message(timestamp, name, host, port, reachable, responding, response_code, response_time, url):
     """
     Format message for logging and printing.
     """
-    return f"{timestamp:<30}{name:<15}{host:<20}{port:<7}{status:<16}{response_code:<14}{response_time:<10}{url}"
+    return f"{timestamp:<30}{name:<15}{host:<20}{port:<7}{reachable:<10}{responding:<16}{response_code:<14}{response_time:<10}{url}"
 
 def poll_http(name, host, port, endpoint):
     url = f"http://{host}:{port}{endpoint}"
@@ -36,14 +52,17 @@ def poll_http(name, host, port, endpoint):
     start_time = datetime.datetime.now()
     response = None
     response_time = "N/A"
-    status = 'N/A'
+    reachable = 'No'
+    status = 'Unreachable'
     response_code = 'N/A'
     response_time = None
     try:
-        response = requests.get(url, timeout=global_timeout)
-        response.raise_for_status()
-        status = 'Success'
-        response_code = response.status_code
+        if ip_reachable(host,port):
+            #print("Reachable!")
+            response = requests.get(url, timeout=global_timeout)
+            response.raise_for_status()
+            status = 'Success'
+            response_code = response.status_code
     except Timeout:
         status = "Timeout"
     except ConnectionError as e:
@@ -61,7 +80,7 @@ def poll_telnet(name, host, port):
     timestamp = datetime.datetime.now().isoformat()
     start_time = datetime.datetime.now()
     try:
-        tn = telnetlib.Telnet(host, port, timeout=10)
+        tn = telnetlib.Telnet(host, port, timeout=global_timeout)
         response_time = datetime.datetime.now() - start_time
         tn.close()
         result = format_message(timestamp, name, host, port, "Success", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
@@ -80,7 +99,7 @@ def poll_smtp(name, host, port):
     timestamp = datetime.datetime.now().isoformat()
     start_time = datetime.datetime.now()
     try:
-        server = smtplib.SMTP(host, port, timeout=10)
+        server = smtplib.SMTP(host, port, timeout=global_timeout)
         server.noop()
         response_time = datetime.datetime.now() - start_time
         server.quit()
