@@ -8,8 +8,7 @@ import telnetlib
 import smtplib
 
 
-
-global_timeout=1
+global_timeout=5
 
 # Initialize logging
 logging.basicConfig(filename='server_responses.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,7 +18,7 @@ with open('servers.json', 'r') as f:
     servers = json.load(f)
 
 
-def ip_reachable(host,port,timeout=10):
+def ip_reachable(host,port,timeout=global_timeout):
     try:
         sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         sock.settimeout(timeout)
@@ -47,24 +46,29 @@ def format_message(timestamp, name, host, port, reachable, responding, response_
     return f"{timestamp:<30}{name:<15}{host:<20}{port:<7}{reachable:<10}{responding:<16}{response_code:<14}{response_time:<10}{url}"
 
 def poll_http(name, host, port, endpoint):
-    url = f"http://{host}:{port}{endpoint}"
-    timestamp = datetime.datetime.now().isoformat()
-    start_time = datetime.datetime.now()
+
+    url= f"http://{host}:{port}{endpoint}"
+
+    results = dict.fromkeys(['timestamp','name','host','port','reachable','responding','response_code','response_time, url'])
+    results['url'] = url
+    results['timestamp'] = datetime.datetime.now().isoformat()
+    results['start_time'] = datetime.datetime.now()
+    results['response_time'] = "N/A"
+    results['reachable'] = 'No'
+    results['responding'] = 'No'
+    results['response_code'] = 'N/A'
+    results['response_time'] = None
     response = None
-    response_time = "N/A"
-    reachable = 'No'
-    status = 'Unreachable'
-    response_code = 'N/A'
-    response_time = None
+
+    if ip_reachable(host,port):
+        results['reachable'] = "Yes"
     try:
-        if ip_reachable(host,port):
-            #print("Reachable!")
-            response = requests.get(url, timeout=global_timeout)
-            response.raise_for_status()
-            status = 'Success'
-            response_code = response.status_code
+        response = requests.get(results[''], timeout=global_timeout)
+        response.raise_for_status()
+        results['status'] = 'Success'
+        results['response_code']= response.status_code
     except Timeout:
-        status = "Timeout"
+        results['responding'] = "Timeout"
     except ConnectionError as e:
         status = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
     except RequestException as e:
