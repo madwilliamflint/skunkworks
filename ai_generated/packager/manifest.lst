@@ -1,0 +1,8 @@
+# Project: packager
+# Version: 0.0.1
+# PackageType: deploy
+# BuildNumber: 1
+# Author: Me, myself, and I
+.\package.py
+.\README.txt
+.\manifest.lst
