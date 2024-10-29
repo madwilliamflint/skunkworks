@@ -1,0 +1,12 @@
+{
+    "monitoring": [
+        {
+            "name": "ProjectA",
+            "directory": "path/to/ProjectA"
+        },
+        {
+            "name": "ProjectB",
+            "directory": "path/to/ProjectB"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "data_path": "c:/users/mpwilson/data.dev/track_changes",
+    "monitoring": [
+        {
+            "name": "skunkworks",
+            "directory": "c:/users/mpwilson/srctree/python/skunkworks"
+        },
+        {
+            "name": "steam",
+            "directory": "C:/Program Files (x86)/Steam/userdata"
+        }
+    ],
+    "other_config": "value"
+}
