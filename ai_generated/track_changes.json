@@ -8,11 +8,13 @@
         
         {
             "name": "skunkworks",
-            "directory": "c:/users/mpwilson/srctree/python/skunkworks"
+            "directory": "c:/users/mpwilson/srctree/python/skunkworks",
+            "use_sha256": true
         },
         {
             "name": "steam",
-            "directory": "C:/Program Files (x86)/Steam/userdata"
+            "directory": "C:/Program Files (x86)/Steam/userdata",
+            "use_sha256": false
         }
         
     ],
