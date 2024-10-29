@@ -1,0 +1,45 @@
+import json
+
+def load_state(state_file):
+    with open(state_file, 'r') as f:
+        state_data = json.load(f)
+    return state_data['state']
+
+def compare_leaf_nodes(state1, state2):
+    common_files = []
+    unique_to_state1 = []
+    unique_to_state2 = []
+
+    files_state1 = {(file, state1[file]['size']) for file in state1}
+    files_state2 = {(file, state2[file]['size']) for file in state2}
+
+    common_files = files_state1.intersection(files_state2)
+    unique_to_state1 = files_state1 - files_state2
+    unique_to_state2 = files_state2 - files_state1
+
+    return common_files, unique_to_state1, unique_to_state2
+
+def main(state_file1, state_file2):
+    state1 = load_state(state_file1)
+    state2 = load_state(state_file2)
+
+    common_files, unique_to_state1, unique_to_state2 = compare_leaf_nodes(state1, state2)
+
+    print("Common files:")
+    for file, size in common_files:
+        print(f"  {file} (size: {size})")
+
+    print("Unique to first state:")
+    for file, size in unique_to_state1:
+        print(f"  {file} (size: {size})")
+
+    print("Unique to second state:")
+    for file, size in unique_to_state2:
+        print(f"  {file} (size: {size})")
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: python compare_trees.py <state_file1> <state_file2>")
+    else:
+        main(sys.argv[1], sys.argv[2])
