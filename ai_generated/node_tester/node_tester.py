@@ -6,7 +6,7 @@ import socket
 from requests.exceptions import RequestException, Timeout, ConnectionError
 
 global_timeout=5
-global_default_port = 80
+global_default_port = 9090
 
 # Initialize logging
 logging.basicConfig(filename='server_responses.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -85,17 +85,26 @@ def poll_http(name, host, port, endpoint):
         
     try:
         response = requests.get(results['url'], timeout=global_timeout)
-        response.raise_for_status()
         results['status'] = 'Success'
         results['response_code'] = response.status_code
+        response.raise_for_status()
 
     except Timeout:
         results['responding'] = "Timeout"
     except ConnectionError as e:
         results['status'] = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
     except RequestException as e:
-        results['response_code'] = e.response.status_code if e.response else "N/A"
+        print("RequestException [{0}]".format(str(e)))
+        if "404" in str(e):
+            results['status'] = 'Success'
+            results['response_code'] = '404'
+        else:
+            results['status'] = "Success" if "404" in str(e) else "Failed"
+            results['response_code'] = e.response.status_code if e.response else "N/A"
+    except Exception as e:
+        print("Unknown exception in poll_http: [{0}]".format(str(e)))
         results['status'] = 'Error'
+        results['response_code'] = 'N/A'
     finally:
         results['response_time'] = ((datetime.datetime.now() - start_time).microseconds) / 1000000
 
