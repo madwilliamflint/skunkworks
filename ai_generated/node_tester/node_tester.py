@@ -34,18 +34,24 @@ def ip_reachable(host,timeout=global_timeout):
         
     return False
 
+
+def format_message(result):
+    """
+    Format message for logging and printing.
+    """
+
+    #timestamp, name, host, port, reachable,test_id, responding, response_code, response_time, url)
+    output =  "{timestamp:<30}{name:<15}{host:<20}{port:<7}{reachable:<10}{test_id:<15}{responding:<16}{response_code:<14}{response_time:<10}{url}".format(**result)
+    return output
+
 def log_result(result):
     """
     Log and print result. This function can be replaced to redirect output as needed.
     """
-    logging.info(result)
-    print(result)
+    output = format_message(result)
+    logging.info(output)
+    print(output)
 
-def format_message(timestamp, name, host, port, reachable,test_id, responding, response_code, response_time, url):
-    """
-    Format message for logging and printing.
-    """
-    return f"{timestamp:<30}{name:<15}{host:<20}{port:<7}{reachable:<10}{test_id:<15}{responding:<16}{response_code:<14}{response_time:<10}{url}"
 
 def poll_http(name, host, port, endpoint):
 
@@ -64,6 +70,7 @@ def poll_http(name, host, port, endpoint):
     results['response_time'] = 'N/A'
 
     response = None
+
         
     try:
         response = requests.get(results['url'], timeout=global_timeout)
@@ -100,7 +107,7 @@ def poll_telnet(name, host, port):
     except Exception as e:
         response_time = datetime.datetime.now() - start_time
         result = format_message(timestamp, name, host, port, "Unreachable", "N/A", f"{response_time.total_seconds()}s", f"telnet://{host}:{port}")
-    return results
+    log_result(result)
 
 def poll_smtp(name, host, port):
     timestamp = datetime.datetime.now().isoformat()
@@ -120,15 +127,21 @@ def poll_smtp(name, host, port):
     except Exception as e:
         response_time = datetime.datetime.now() - start_time
         result = format_message(timestamp, name, host, port, "Unreachable", "N/A", f"{response_time.total_seconds()}s", f"smtp://{host}:{port}")
-    return results
+    log_result(result)
+
+def emit_header():
+    keys = ['timestamp','name','host','port','reachable','test_id','responding','response_code','response_time, url']
+    labels = ["Timestamp", "Name", "Host", "Port", "Reachable", "Test Id","Responding","Response Code", "Response Time", "URL"]
+    results = {keys[i]: labels[i] for i in range(len(keys))}
+    log_result(results)
+
 
 def main():
 
-    header = format_message("Timestamp", "Name", "Host", "Port", "Reachable", "Test Id","Responding","Response Code", "Response Time", "URL")
-    log_result(header)
+    emit_header()
+
     for name, server in servers.items():
         host = server["host"]
-
         results = dict.fromkeys(['timestamp','name','host','port','reachable','test_id','responding','response_code','response_time, url'])
 
         if ip_reachable(host):
@@ -138,9 +151,9 @@ def main():
                 if protocol == "http":
                     endpoint = profile.get("url", "/custom-endpoint")
                     results = poll_http(name, host, port, endpoint)
-                elif protocol == "telnet":
+                elif protocol == "_telnet":
                     results = poll_telnet(name, host, port)
-                elif protocol == "smtp":
+                elif protocol == "_smtp":
                     results = poll_smtp(name, host, port)
 
                 results['test_id']   = test_id

@@ -23,23 +23,5 @@
                 "url": "/custom-endpoint"
             }
         }
-    },
-    "Server2": {
-        "host": "example.com",
-        "test_profiles": {
-            "1": {
-                "protocol": "smtp",
-                "port": 25
-            }
-        }
-    },
-    "Server3": {
-        "host": "invalid.host",
-        "test_profiles": {
-            "1": {
-                "protocol": "telnet",
-                "port": 23
-            }
-        }
     }
 }
