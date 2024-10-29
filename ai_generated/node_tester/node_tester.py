@@ -48,37 +48,39 @@ def format_message(timestamp, name, host, port, reachable, responding, response_
 def poll_http(name, host, port, endpoint):
 
     url= f"http://{host}:{port}{endpoint}"
+    start_time    = datetime.datetime.now()
 
     results = dict.fromkeys(['timestamp','name','host','port','reachable','responding','response_code','response_time, url'])
-    results['url'] = url
-    results['timestamp'] = datetime.datetime.now().isoformat()
-    results['start_time'] = datetime.datetime.now()
+
+    results['url']           = url
+    results['timestamp']     = start_time.isoformat()
+    results['name']          = name
     results['response_time'] = "N/A"
-    results['reachable'] = 'No'
-    results['responding'] = 'No'
+    results['reachable']     = 'No'
+    results['responding']    = 'No'
     results['response_code'] = 'N/A'
-    results['response_time'] = None
+    results['response_time'] = 'N/A'
+
     response = None
 
-    if ip_reachable(host,port):
-        results['reachable'] = "Yes"
+        
     try:
         response = requests.get(results[''], timeout=global_timeout)
         response.raise_for_status()
         results['status'] = 'Success'
-        results['response_code']= response.status_code
+        results['response_code'] = response.status_code
+
     except Timeout:
         results['responding'] = "Timeout"
     except ConnectionError as e:
-        status = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
+        results['status'] = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
     except RequestException as e:
-        response_code = e.response.status_code if e.response else "N/A"
-        status = 'Error'
+        results['response_code'] = e.response.status_code if e.response else "N/A"
+        results['status'] = 'Error'
     finally:
-        response_time = datetime.datetime.now() - start_time
+        results['response_time'] = datetime.datetime.now() - start_time
 
-    result = format_message(timestamp, name, host, port, status,response_code, f"{response_time.total_seconds()}", url)
-    log_result(result)
+    return results 
 
 def poll_telnet(name, host, port):
     timestamp = datetime.datetime.now().isoformat()
@@ -120,20 +122,26 @@ def poll_smtp(name, host, port):
     log_result(result)
 
 def main():
-    header = format_message("Timestamp", "Name", "Host", "Port", "Status", "Response Code", "Response Time", "URL")
+    
+    header = format_message("Timestamp", "Name", "Host", "Port", "Reachable", "Responding","Response Code", "Response Time", "URL")
     log_result(header)
     for name, server in servers.items():
         host = server["host"]
-        for test_id, profile in server["test_profiles"].items():
-            protocol = profile.get("protocol", "http")
-            port = profile["port"]
-            if protocol == "http":
-                endpoint = profile.get("url", "/custom-endpoint")
-                poll_http(name, host, port, endpoint)
-            elif protocol == "telnet":
-                poll_telnet(name, host, port)
-            elif protocol == "smtp":
-                poll_smtp(name, host, port)
+
+        reachable = False
+        if ip_reachable(host,port):
+            reachable = True
+
+            for test_id, profile in server["test_profiles"].items():
+                protocol = profile.get("protocol", "http")
+                port = profile["port"]
+                if protocol == "http":
+                    endpoint = profile.get("url", "/custom-endpoint")
+                    poll_http(name, host, port, endpoint)
+                elif protocol == "telnet":
+                    poll_telnet(name, host, port)
+                elif protocol == "smtp":
+                    poll_smtp(name, host, port)
 
 if __name__ == "__main__":
     main()
