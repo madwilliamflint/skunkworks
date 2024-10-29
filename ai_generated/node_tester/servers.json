@@ -1,7 +1,29 @@
 {
-    "home": {
+    "ludology": {
         "host": "127.0.0.1",
         "test_profiles": {
+            "1": {
+
+                "ip": "10.131.37.118",
+                "protocol": "http",
+                "port": 9090
+            }
+        }
+    },
+    "central": {
+        "host": "10.131.37.131",
+        "test_profiles": {
+            "1": {
+                "port": 9090,
+                "protocol": "http",
+                "url": "/"
+            }
+        }
+    },
+    "ludology": {
+        "host": "127.0.0.1",
+        "test_profiles": {
+            
             "1": {
                 "protocol": "http",
                 "port": 5050,
@@ -13,15 +35,6 @@
                 "url": "/"
             }
         }
-    },
-    "Server1": {
-        "host": "192.168.1.1",
-        "test_profiles": {
-            "1": {
-                "protocol": "http",
-                "port": 8080,
-                "url": "/custom-endpoint"
-            }
-        }
     }
+    
 }

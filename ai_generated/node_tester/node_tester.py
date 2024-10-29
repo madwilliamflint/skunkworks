@@ -24,8 +24,10 @@ def ip_reachable(host,timeout=global_timeout):
         sock.close()
         return True
     except ConnectionRefusedError:
+        print("Connection Refused to [{0}]:{1}".format(host,port))
         return True
     except TimeoutError:
+        print("Timeout to [{0}]:{1}".format(host,port))
         return False
         
     return False
