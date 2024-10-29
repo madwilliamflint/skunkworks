@@ -1,11 +1,6 @@
 {
     "data_path": "c:/users/mpwilson/data.dev/track_changes",
-    "monitoring": [
-        {
-            "name": "librarynas",
-            "directory": "z:/"
-        },
-        
+    "monitoring": [        
         {
             "name": "skunkworks",
             "directory": "c:/users/mpwilson/srctree/python/skunkworks",
