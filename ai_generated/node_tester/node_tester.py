@@ -85,25 +85,33 @@ def poll_http(name, host, port, endpoint):
         
     try:
         response = requests.get(results['url'], timeout=global_timeout)
-        results['status'] = 'Success'
+        results['responding'] = 'Yes'
         results['response_code'] = response.status_code
         response.raise_for_status()
 
     except Timeout:
-        results['responding'] = "Timeout"
+        results['responding'] = "No"
+        results['response_code'] = "Timeout"
     except ConnectionError as e:
-        results['status'] = "Port Not Listening" if "Connection refused" in str(e) else "Unreachable"
+#        print("ConnectionError: [{0}]".format(str(e)))
+        if "actively refused" in str(e):
+            results['responding'] = "No"
+        else:
+            results['response_code'] = "Unreachable"
+            results['responding'] = "No"
+            
+        
     except RequestException as e:
-        print("RequestException [{0}]".format(str(e)))
+#        print("RequestException [{0}]".format(str(e)))
         if "404" in str(e):
-            results['status'] = 'Success'
+            results['responding'] = 'Yes'
             results['response_code'] = '404'
         else:
-            results['status'] = "Success" if "404" in str(e) else "Failed"
+            results['responding'] = "Yes" if "404" in str(e) else "Failed"
             results['response_code'] = e.response.status_code if e.response else "N/A"
     except Exception as e:
-        print("Unknown exception in poll_http: [{0}]".format(str(e)))
-        results['status'] = 'Error'
+#        print("Unknown exception in poll_http: [{0}]".format(str(e)))
+        results['responding'] = 'Error'
         results['response_code'] = 'N/A'
     finally:
         results['response_time'] = ((datetime.datetime.now() - start_time).microseconds) / 1000000
